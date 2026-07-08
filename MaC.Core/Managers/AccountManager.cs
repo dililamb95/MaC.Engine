@@ -15,6 +15,7 @@ public class AccountManager
 {
     private readonly List<Account> _accounts = new();
     private readonly List<TradeHistory> _tradeHistory = new();
+    private readonly Dictionary<(Guid AccountId, DateTime Date), TradingDay> _tradingDays = new();
 
     private readonly AccountEngine _accountEngine;
     private readonly IAccountManagerStorage _storage;
@@ -35,7 +36,6 @@ public class AccountManager
     }
 
     public IReadOnlyList<Account> Accounts => _accounts;
-
     public IReadOnlyList<TradeHistory> TradeHistory => _tradeHistory;
 
     public Account CreateAccount(AccountType accountType)
@@ -63,16 +63,13 @@ public class AccountManager
     public EngineResult ProcessTrade(Account account, Trade trade)
     {
         var evaluation = EvaluationFactory.Create(account.Type);
+        var tradeDate = GetTradeDate(trade);
+        var tradingDay = GetOrCreateTradingDay(account, tradeDate);
 
         var context = new TradingContext
         {
             Account = account,
-            TradingDay = new TradingDay
-            {
-                Date = DateTime.Today,
-                StartingBalance = account.ClosedBalance,
-                CurrentBalance = account.ClosedBalance
-            },
+            TradingDay = tradingDay,
             RuleSet = evaluation.RuleSet,
             Trade = trade
         };
@@ -81,7 +78,7 @@ public class AccountManager
 
         _tradeHistory.Add(new TradeHistory
         {
-            Date = DateTime.Today,
+            Date = tradeDate,
             AccountName = account.Name,
             Contracts = trade.Contracts,
             NetPnL = trade.NetPnL,
@@ -91,6 +88,34 @@ public class AccountManager
         });
 
         return result;
+    }
+
+    private TradingDay GetOrCreateTradingDay(Account account, DateTime date)
+    {
+        var key = (account.Id, date.Date);
+
+        if (_tradingDays.TryGetValue(key, out var tradingDay))
+        {
+            return tradingDay;
+        }
+
+        tradingDay = new TradingDay
+        {
+            Date = date.Date,
+            StartingBalance = account.ClosedBalance,
+            CurrentBalance = account.ClosedBalance
+        };
+
+        _tradingDays[key] = tradingDay;
+
+        return tradingDay;
+    }
+
+    private static DateTime GetTradeDate(Trade trade)
+    {
+        return trade.EntryTime == default
+            ? DateTime.Today
+            : trade.EntryTime.Date;
     }
 
     public Account? GetAccount(string name)
