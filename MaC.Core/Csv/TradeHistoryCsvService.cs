@@ -11,7 +11,8 @@ public class TradeHistoryCsvService
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine("Date,AccountName,Contracts,NetPnL,BalanceAfterTrade,AccountStatus,RuleTriggered");
+        builder.AppendLine(
+            "Date,AccountName,Contracts,NetPnL,BalanceAfterTrade,AccountStatus,RuleTriggered");
 
         foreach (var trade in trades)
         {
@@ -39,12 +40,28 @@ public class TradeHistoryCsvService
 
             trades.Add(new TradeHistory
             {
-                Date = DateTime.Parse(parts[0]),
+                Date = DateTime.Parse(
+                    parts[0],
+                    CultureInfo.InvariantCulture),
+
                 AccountName = parts[1],
-                Contracts = int.Parse(parts[2]),
-                NetPnL = decimal.Parse(parts[3], CultureInfo.InvariantCulture),
-                BalanceAfterTrade = decimal.Parse(parts[4], CultureInfo.InvariantCulture),
-                AccountStatus = Enum.Parse<AccountStatus>(parts[5]),
+
+                Contracts = int.Parse(
+                    parts[2],
+                    CultureInfo.InvariantCulture),
+
+                NetPnL = decimal.Parse(
+                    parts[3],
+                    CultureInfo.InvariantCulture),
+
+                BalanceAfterTrade = decimal.Parse(
+                    parts[4],
+                    CultureInfo.InvariantCulture),
+
+                AccountStatus = (AccountStatus)Enum.Parse(
+                    typeof(AccountStatus),
+                    parts[5]),
+
                 RuleTriggered = parts[6]
             });
         }
