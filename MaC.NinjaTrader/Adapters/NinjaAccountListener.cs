@@ -1,4 +1,5 @@
-﻿using NinjaTrader.Cbi;
+﻿using MaC.NinjaTrader.Services;
+using NinjaTrader.Cbi;
 
 namespace MaC.NinjaTrader.Adapters;
 
@@ -25,8 +26,23 @@ public class NinjaAccountListener
 
     private void OnExecutionUpdate(object sender, ExecutionEventArgs e)
     {
-        // Por ahora solo verificamos que el evento llegue.
-        // En el siguiente paso construiremos el TradingContext
-        // y enviaremos la operación al AccountEngine.
+        var ninjaAccount = sender as Account;
+
+        if (ninjaAccount == null)
+        {
+            return;
+        }
+
+        var context =
+            NinjaTradingContextFactory.Create(ninjaAccount);
+
+        global::NinjaTrader.Code.Output.Process(
+            $"MaC | " +
+            $"Cuenta: {ninjaAccount.Name} | " +
+            $"Instrumento: {e.Execution.Instrument?.FullName} | " +
+            $"Cantidad: {e.Quantity} | " +
+            $"Precio: {e.Price} | " +
+            $"Saldo: {context.Account.ClosedBalance}",
+            global::NinjaTrader.NinjaScript.PrintTo.OutputTab1);
     }
 }
