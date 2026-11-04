@@ -1,0 +1,581 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="clr-namespace:MaCProFunding.AddOn.Controls" x:Class="MaCProFunding.AddOn.DashboardV2" mc:Ignorable="d" d:DesignWidth="1060" d:DesignHeight="900" MinWidth="0" MinHeight="0" Background="Transparent" FontFamily="Segoe UI" UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <UserControl.Resources>
+
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+
+                <ResourceDictionary Source="Themes/MaCProGlassTheme.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource GlassWindowGradient}">
+
+
+
+        <!-- =================================================
+             SIDEBAR V2
+             ================================================= -->
+
+        <Grid x:Name="DashboardContent">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- PREMIUM HEADER V2 -->
+
+            <Border Grid.Row="0" Background="#B00B1018" BorderBrush="{StaticResource GlassBorderSoft}" BorderThickness="0,0,0,1" Padding="28,17">
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="14"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <Border Background="#2BF7BC32" BorderBrush="#70F7BC32" BorderThickness="1" CornerRadius="7" Padding="9,4">
+
+                                <TextBlock Text="MACPRO TERMINAL" Foreground="{StaticResource AccentGoldLight}" FontSize="9" FontWeight="Bold"/>
+
+                            </Border>
+
+                            <Border Width="1" Height="17" Background="{StaticResource GlassBorder}" Margin="12,0"/>
+
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                                <Border Width="8" Height="8" Background="{StaticResource AccentGreen}" CornerRadius="4" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+
+                                    <Border.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                    </Border.RenderTransform>
+
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#26E875" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
+                                    </Border.Effect>
+
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+
+                                            <Style.Triggers>
+
+                                                <EventTrigger RoutedEvent="Border.Loaded">
+
+                                                    <BeginStoryboard>
+
+                                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.45" To="1" Duration="0:0:1.15"/>
+
+                                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" From="0.78" To="1.18" Duration="0:0:1.15"/>
+
+                                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" From="0.78" To="1.18" Duration="0:0:1.15"/>
+
+                                                        </Storyboard>
+
+                                                    </BeginStoryboard>
+
+                                                </EventTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+                                    </Border.Style>
+
+                                </Border>
+
+                                <TextBlock Text="EVALUATION PERFORMANCE" Foreground="{StaticResource GlassSecondaryText}" FontSize="10" FontWeight="SemiBold" Margin="7,0,0,0" VerticalAlignment="Center"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+
+                        <TextBlock Text="Evaluation Performance" Foreground="{StaticResource GlassPrimaryText}" FontSize="25" FontWeight="SemiBold" Margin="0,9,0,0"/>
+
+                        <TextBlock Text="Real-time account performance, risk and evaluation progress" Foreground="{StaticResource GlassMutedText}" FontSize="11" Margin="0,4,0,0"/>
+
+                    </StackPanel>
+
+                    <!-- Por ahora es visual. Lo conectaremos
+                         con las cuentas en el siguiente paso. -->
+                    <Grid Grid.Column="2" Grid.ColumnSpan="3">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="14"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="6"/>
+                            <RowDefinition Height="44"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- LABEL -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="SELECTED TRADING ACCOUNT" Foreground="#718096" FontSize="10" FontWeight="Medium" VerticalAlignment="Center"/>
+
+                        <!-- ACCOUNT SELECTOR -->
+                        <Border Grid.Row="2" Grid.Column="0" Height="44" CornerRadius="11" Background="#0F1720" BorderBrush="#213142" BorderThickness="1">
+
+                            <ComboBox x:Name="PremiumAccountSelector" Height="44" Background="Transparent" Foreground="#F5F7FA" BorderThickness="0" FontSize="12" FontWeight="SemiBold" Padding="12,0" VerticalContentAlignment="Center" SelectionChanged="OnPremiumAccountSelectionChanged"/>
+
+                        </Border>
+
+                        <!-- REFRESH BUTTON -->
+                        <Button x:Name="RefreshPreviewButton" Grid.Row="2" Grid.Column="2" Height="44" MinWidth="166" Background="{StaticResource AccentGold}" Foreground="#1E1505" BorderBrush="{StaticResource AccentGoldDark}" BorderThickness="1" FontSize="12" FontWeight="Bold" VerticalAlignment="Center" Click="OnPremiumRefreshAccountsClick">
+
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+
+                                    <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="22" SnapsToDevicePixels="True">
+
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="18,0" RecognizesAccessKey="True"/>
+
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.90"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.75"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45"/>
+                                        </Trigger>
+
+                                    </ControlTemplate.Triggers>
+
+                                </ControlTemplate>
+                            </Button.Template>
+
+                            <TextBlock Text="REFRESH ACCOUNTS" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+
+                        </Button>
+
+                    </Grid>
+                </Grid>
+
+            </Border>
+
+            <!-- =================================================
+     DASHBOARD CONTENT
+     ================================================= -->
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" CanContentScroll="False">
+                <Grid Margin="18,20,18,24" MinWidth="850">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- =================================================
+             CURRENT EVALUATION HERO PANEL
+             ================================================= -->
+
+                    <Border Grid.Row="0" CornerRadius="24" BorderBrush="#5A4CC6A6" BorderThickness="1" Padding="36,32,36,26" MinHeight="440">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#152E34" Offset="0"/>
+                                <GradientStop Color="#0A1721" Offset="0.65"/>
+                                <GradientStop Color="#0A1C23" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="24"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="YOUR FUNDING JOURNEY" Foreground="#EFC66C" FontSize="11" FontWeight="Bold"/>
+                                    <TextBlock Text="Every trading day counts." Foreground="#F6FAFC" FontSize="32" FontWeight="Bold" Margin="0,9,0,0"/>
+                                    <TextBlock Text="Track your profit target and the requirements for your evaluation." Foreground="#9EB5C2" FontSize="12" Margin="0,7,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                    <TextBlock Text="EVALUATION STATUS" Foreground="#94AEBB" FontSize="10" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
+                                        <TextBlock x:Name="HeroStatusText" Text="ACTIVE" Foreground="{StaticResource AccentGreen}" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Margin="0,4,0,0"/>
+
+                                        <TextBlock x:Name="HeroFailureReasonText" Text="" Foreground="#FF7A7A" FontSize="10" FontWeight="SemiBold" Margin="0,4,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="270"/>
+                                    <ColumnDefinition Width="38"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Grid Width="220" Height="220">
+                                        <Ellipse Width="205" Height="205" Stroke="#29454C" StrokeThickness="13"/>
+                                        <Ellipse Width="205" Height="205" Stroke="#2BE1A5" StrokeThickness="13" StrokeDashArray="4.3,1" RenderTransformOrigin="0.5,0.5">
+                                            <Ellipse.RenderTransform>
+                                                <RotateTransform Angle="-90"/>
+                                            </Ellipse.RenderTransform>
+                                        </Ellipse>
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock x:Name="HeroCompletionText" Text="84%" Foreground="{StaticResource GlassPrimaryText}" FontSize="48" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                                            <TextBlock Text="PROFIT TARGET" Foreground="#A2C5BC" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="Progress toward your profit goal" Foreground="#A4B9C4" FontSize="11" Margin="0,20,0,0" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <TextBlock Text="TODAY REALIZED P&amp;L" Foreground="#9EB5C2" FontSize="11" FontWeight="Bold"/>
+                                    <StackPanel Margin="0,6,0,0">
+                                        <TextBlock x:Name="HeroDailyPnLText" Text="+$420.00" Foreground="#F5FAFC" FontSize="42" FontWeight="SemiBold" Margin="0,4,0,0"/>
+
+                                    </StackPanel>
+                                    <Grid Margin="0,28,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="REMAINING TO TARGET" Foreground="#9EB5C2" FontSize="10" FontWeight="Bold"/>
+                                            <StackPanel Margin="0,8,0,0">
+                                                <TextBlock x:Name="HeroProfitRemainingText" Text="$2,660.00 remaining" Foreground="#F0C66E" FontSize="24" Margin="0,4,0,0"/>
+
+                                                <TextBlock x:Name="HeroDistanceToPassText" Text="$2,660.00 TO PASS" Foreground="{StaticResource AccentGreen}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0"/>
+
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="PROFIT TARGET" Foreground="#9EB5C2" FontSize="10" FontWeight="Bold"/>
+                                            <StackPanel Margin="0,8,0,0">
+                                                <TextBlock x:Name="HeroProfitTargetText" Text="$55,000.00" Foreground="{StaticResource GlassPrimaryText}" FontSize="24" FontWeight="SemiBold" Margin="0,4,0,0"/>
+
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Border Background="#243B44" CornerRadius="6" Height="10" Margin="0,26,0,0">
+                                        <Border Width="0" HorizontalAlignment="Left" Background="#1CCB9C" CornerRadius="6"/>
+                                    </Border>
+                                    <TextBlock Text="Profit progress alone does not mean the evaluation is passed." Foreground="#91AAB7" FontSize="11" Margin="0,13,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                            <Border Grid.Row="4" BorderBrush="#314C55" BorderThickness="0,1,0,0" Padding="0,22,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="TRADING DAYS" Foreground="#9EB5C2" FontSize="10" FontWeight="Bold"/>
+                                        <StackPanel Margin="0,6,0,0">
+                                            <TextBlock x:Name="HeroTradingDaysText" Text="0 / 5 TRADING DAYS" Foreground="{StaticResource AccentGoldLight}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
+
+                                            <TextBlock x:Name="HeroTradingDaysDescriptionText" Text="5 trading days remaining" Foreground="{StaticResource GlassSecondaryText}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap"/>
+
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="ACCOUNT BALANCE" Foreground="#9EB5C2" FontSize="10" FontWeight="Bold"/>
+                                        <StackPanel Margin="0,6,0,0">
+                                            <TextBlock x:Name="HeroBalanceText" Text="$52,340.00" Foreground="{StaticResource GlassPrimaryText}" FontSize="23" FontWeight="SemiBold" Margin="0,4,0,0"/>
+
+                                        </StackPanel>
+                                        <StackPanel Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="DAILY LOSS AVAILABLE" Foreground="#9EB5C2" FontSize="10" FontWeight="Bold"/>
+                                        <StackPanel Margin="0,6,0,0">
+                                            <TextBlock x:Name="HeroDailyLossRemainingText" Text="$975.00 remaining" Foreground="{StaticResource AccentGreen}" FontSize="10" Margin="0,4,0,0"/>
+
+                                            <TextBlock x:Name="HeroMaxDailyLossText" Text="$1,100.00" Foreground="{StaticResource GlassPrimaryText}" FontSize="17" FontWeight="SemiBold" Margin="0,4,0,0"/>
+
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <!-- =================================================
+     KPI METRIC CARDS
+     ================================================= -->
+
+                    <Grid Grid.Row="2">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="18"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ACCOUNT BALANCE -->
+
+                        <controls:GlassMetricCard x:Name="BalanceMetricCard" Grid.Column="0" Title="ACCOUNT BALANCE" Value="$52,340.00" Subtitle="Closed account balance" IconText="$" AccentBrush="#F7BC32" ValueBrush="#FFFFFF" IconBackground="#33F7BC32" ChartFill="#28F7BC32"/>
+
+                        <!-- EOD FLOOR -->
+
+                        <controls:GlassMetricCard x:Name="FloorMetricCard" Grid.Column="2" Title="EOD FLOOR" Value="$49,800.00" Subtitle="Current end-of-day floor" IconText="≋" AccentBrush="#8B5CF6" ValueBrush="#FFFFFF" IconBackground="#338B5CF6" ChartFill="#228B5CF6"/>
+
+                        <!-- TODAY'S P&L -->
+                        <controls:GlassMetricCard x:Name="DailyPnLMetricCard" Grid.Column="4" Title="TODAY'S P&amp;L" Value="+$420.00" Subtitle="Realized performance today" IconText="▥" AccentBrush="#22D66E" ValueBrush="#22D66E" IconBackground="#3322D66E" ChartFill="#2222D66E"/>
+
+                        <!-- DAILY RISK -->
+
+                        <controls:GlassMetricCard x:Name="DailyRiskMetricCard" Grid.Column="6" Title="DAILY RISK" Value="$125.00" Subtitle="Daily loss status" IconText="◇" AccentBrush="#FF4747" ValueBrush="#FF4747" IconBackground="#33FF4747" ChartFill="#22FF4747"/>
+
+                    </Grid>
+                    <!-- =================================================
+     PERFORMANCE OVERVIEW
+     ================================================= -->
+
+                    <controls:PerformanceChart x:Name="EquityPerformanceChart" Grid.Row="4"/>
+
+                    <!-- =================================================
+     HEALTH AND RECENT ACTIVITY
+     ================================================= -->
+
+                    <Grid Grid.Row="6">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.15*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="0.85*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- =============================================
+         EVALUATION HEALTH
+         ============================================= -->
+
+                        <Border Grid.Column="0" Background="#E010242C" BorderBrush="#465BA9A5" BorderThickness="1" CornerRadius="22" Padding="24">
+
+                            <Grid>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="22"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0">
+
+                                    <TextBlock Text="EVALUATION HEALTH" Foreground="{StaticResource AccentGold}" FontSize="10" FontWeight="Bold"/>
+
+                                    <TextBlock Text="Rule Protection Overview" Foreground="{StaticResource GlassPrimaryText}" FontSize="21" FontWeight="SemiBold" Margin="0,7,0,0"/>
+
+                                    <TextBlock Text="Real-time visibility into the rules protecting your evaluation" Foreground="{StaticResource GlassMutedText}" FontSize="11" Margin="0,5,0,0"/>
+
+                                </StackPanel>
+
+                                <Grid Grid.Row="2">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="1"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="1"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <controls:HealthRing x:Name="ProfitTargetHealthRing" Grid.Column="0" Title="PROFIT TARGET" PercentageText="84%" CenterCaption="PROGRESS" Subtitle="$2,660.00 remaining" AccentBrush="#42E782"/>
+
+                                    <Border Grid.Column="1" Width="1" Height="170" Background="{StaticResource GlassBorderSoft}" VerticalAlignment="Center"/>
+
+                                    <controls:HealthRing x:Name="DailyLossHealthRing" Grid.Column="2" Title="DAILY LOSS" PercentageText="11%" CenterCaption="USED" Subtitle="$975.00 available" AccentBrush="#FF4B4B"/>
+
+                                    <Border Grid.Column="3" Width="1" Height="170" Background="{StaticResource GlassBorderSoft}" VerticalAlignment="Center"/>
+
+                                    <controls:HealthRing x:Name="ConsistencyHealthRing" Grid.Column="4" Title="CONSISTENCY" PercentageText="72%" CenterCaption="SCORE" Subtitle="Healthy distribution" AccentBrush="#8B5CF6"/>
+
+                                </Grid>
+
+                            </Grid>
+
+                        </Border>
+
+                        <!-- =============================================
+         RECENT TRADE ACTIVITY
+         ============================================= -->
+
+                        <Border Grid.Column="2" Background="#E010242C" BorderBrush="#465BA9A5" BorderThickness="1" CornerRadius="22" Padding="24">
+
+                            <Grid>
+
+                                <Grid>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="18"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="18"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- HEADER -->
+
+                                    <Grid Grid.Row="0">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel>
+
+                                            <TextBlock Text="RECENT ACTIVITY" Foreground="{StaticResource AccentGold}" FontSize="10" FontWeight="Bold"/>
+
+                                            <TextBlock Text="Latest Trades" Foreground="{StaticResource GlassPrimaryText}" FontSize="21" FontWeight="SemiBold" Margin="0,7,0,0"/>
+
+                                            <TextBlock Text="Most recent account executions" Foreground="{StaticResource GlassMutedText}" FontSize="11" Margin="0,5,0,0"/>
+
+                                        </StackPanel>
+
+                                        <Button x:Name="ViewAllTradesButton" Grid.Column="1" Content="VIEW ALL" Background="#1C2733" Foreground="{StaticResource GlassSecondaryText}" BorderBrush="#35435466" BorderThickness="1" Padding="11,7" VerticalAlignment="Top" FontSize="9" FontWeight="SemiBold" Cursor="Hand" Click="OnViewAllTradesClick"/>
+
+                                    </Grid>
+
+                                    <!-- REAL TRADES -->
+
+                                    <Grid Grid.Row="2">
+
+                                        <ItemsControl x:Name="LatestTradesItems">
+
+                                            <ItemsControl.ItemTemplate>
+
+                                                <DataTemplate>
+
+                                                    <Grid Margin="0,0,0,12">
+
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="42"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- INSTRUMENT BADGE -->
+
+                                                        <Border Width="36" Height="36" Background="{Binding BadgeBackground}" BorderBrush="{Binding BadgeBorder}" BorderThickness="1" CornerRadius="9" VerticalAlignment="Center">
+
+                                                            <TextBlock Text="{Binding InstrumentCode}" Foreground="{Binding BadgeForeground}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                        </Border>
+
+                                                        <!-- TRADE INFORMATION -->
+
+                                                        <StackPanel Grid.Column="1" Margin="11,0,12,0" VerticalAlignment="Center">
+
+                                                            <TextBlock Text="{Binding PrimaryText}" Foreground="{StaticResource GlassPrimaryText}" FontSize="11" FontWeight="SemiBold"/>
+
+                                                            <TextBlock Text="{Binding SecondaryText}" Foreground="{StaticResource GlassMutedText}" FontSize="9" Margin="0,4,0,0"/>
+
+                                                        </StackPanel>
+
+                                                        <!-- PNL -->
+
+                                                        <TextBlock Grid.Column="2" Text="{Binding PnLText}" Foreground="{Binding PnLForeground}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+                                                    </Grid>
+
+                                                </DataTemplate>
+
+                                            </ItemsControl.ItemTemplate>
+
+                                        </ItemsControl>
+
+                                        <!-- EMPTY STATE -->
+
+                                        <StackPanel x:Name="LatestTradesEmptyPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" Margin="0,24">
+
+                                            <TextBlock Text="NO CLOSED TRADES TODAY" Foreground="{StaticResource GlassSecondaryText}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+
+                                            <TextBlock Text="Closed trades will appear here automatically." Foreground="{StaticResource GlassMutedText}" FontSize="9" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+
+                                        </StackPanel>
+
+                                    </Grid>
+
+                                    <Border Grid.Row="3" Height="1" Background="{StaticResource GlassBorderSoft}"/>
+
+                                    <!-- SUMMARY -->
+
+                                    <Grid Grid.Row="4" Margin="0,3,0,0">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="TODAY'S REALIZED P&amp;L" Foreground="{StaticResource GlassMutedText}" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+                                        <TextBlock x:Name="LatestTradesTotalPnLText" Grid.Column="1" Text="$0.00" Foreground="{StaticResource GlassPrimaryText}" FontSize="17" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                                    </Grid>
+
+                                </Grid>
+                            </Grid>
+
+                        </Border>
+
+                    </Grid>
+
+                </Grid>
+
+            </ScrollViewer>
+
+        </Grid>
+
+
+        <!-- ENGINE ACTIVATION OVERLAY -->
+
+        <Grid x:Name="ActivationOverlay" Grid.ColumnSpan="2" Panel.ZIndex="1000" Background="#F2071018" Visibility="Collapsed">
+            <Border Width="460" Padding="36" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF111A24" BorderBrush="#FF263442" BorderThickness="1" CornerRadius="14">
+                <StackPanel>
+
+                    <TextBlock Text="Activar MaCPro" FontSize="26" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Ingresa el código de activación generado desde tu Portal MaCPro." FontSize="14" Foreground="#FF9EABB8" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,24"/>
+
+                    <TextBox x:Name="ActivationCodeTextBox" Height="44" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="12" Margin="0,0,0,14"/>
+
+                    <Button x:Name="ActivateEngineButton" Content="ACTIVAR" Height="44" FontSize="15" FontWeight="Bold" Click="ActivateEngineButton_Click"/>
+
+                    <TextBlock x:Name="ActivationStatusText" Text="" FontSize="13" Foreground="#FF9EABB8" TextAlignment="Center" TextWrapping="Wrap" Margin="0,16,0,0"/>
+
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

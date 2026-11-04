@@ -1,0 +1,22 @@
+﻿<Window x:Class="MaCProFunding.Preview.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mac="clr-namespace:MaCProFunding.AddOn;assembly=MaCProFunding.AddOn"
+        Title="MaCPro Terminal Preview"
+        Width="1060"
+        Height="740"
+        MinWidth="760"
+        MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+        Background="#070B11"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+
+    <Grid Background="#070B11">
+
+        <mac:DashboardV2/>
+
+    </Grid>
+
+</Window>
