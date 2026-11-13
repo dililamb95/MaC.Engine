@@ -1363,7 +1363,24 @@ namespace MaCProFunding.AddOn
         {
             // Mantiene actualizado el Dashboard
             // de la cuenta actualmente seleccionada.
-            RefreshDashboard();
+            //
+            // FIX DASHBOARD: antes, si RefreshDashboard
+            // lanzaba una excepción, el resto del tick
+            // (la detección de cuentas nuevas) NUNCA se
+            // ejecutaba y la excepción terminaba en el
+            // manejador global de NinjaTrader.
+            try
+            {
+                RefreshDashboard();
+            }
+            catch (Exception exception)
+            {
+                global::NinjaTrader.Code.Output.Process(
+                    "MaC | Error en refresco del host del Dashboard | " +
+                    exception.Message,
+                    global::NinjaTrader.NinjaScript
+                        .PrintTo.OutputTab1);
+            }
 
             // Si todavía no existe un listener conectado,
             // no hay cuentas que buscar.

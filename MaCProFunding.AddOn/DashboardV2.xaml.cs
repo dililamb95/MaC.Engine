@@ -36,6 +36,35 @@ namespace MaCProFunding.AddOn
         private TradeHistoryWindow?
             _tradeHistoryWindow;
 
+        /*
+         * FIX DASHBOARD — diagnóstico visible.
+         *
+         * Antes los errores iban a Debug.WriteLine,
+         * que NinjaTrader no muestra. Si el refresco
+         * fallaba en cada tick, el Dashboard parecía
+         * "congelado" sin ninguna pista.
+         *
+         * Ahora se escriben en la pestaña Output 1,
+         * limitados a uno cada 10 s para no inundarla.
+         */
+        private DateTime _lastSuccessfulRefreshUtc =
+            DateTime.MinValue;
+
+        private DateTime _lastErrorLogUtc =
+            DateTime.MinValue;
+
+        private int _consecutiveRefreshErrors;
+
+        private static readonly TimeSpan ErrorLogInterval =
+            TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Momento UTC del último refresco completo.
+        /// Útil para mostrar "Actualizado hace X s".
+        /// </summary>
+        public DateTime LastSuccessfulRefreshUtc =>
+            _lastSuccessfulRefreshUtc;
+
         /// <summary>
         /// Solicita al host seleccionar otra cuenta.
         /// </summary>
@@ -61,9 +90,19 @@ namespace MaCProFunding.AddOn
                 new MaCRenderEngine(
                     this);
 
+            /*
+             * FIX DASHBOARD — prioridad Normal.
+             *
+             * Con Background, WPF solo ejecuta el tick
+             * cuando el hilo de UI está libre. En la
+             * apertura del mercado NinjaTrader satura ese
+             * hilo con gráficos y DOM, y los ticks se
+             * retrasan o se acumulan: el Dashboard parece
+             * detenido justo cuando más importa.
+             */
             _refreshTimer =
                 new DispatcherTimer(
-                    DispatcherPriority.Background)
+                    DispatcherPriority.Normal)
                 {
                     Interval =
                         TimeSpan.FromMilliseconds(
@@ -105,6 +144,41 @@ namespace MaCProFunding.AddOn
                     nameof(session));
 
             RefreshDashboard();
+
+            /*
+             * FIX DASHBOARD — causa principal del "congelamiento".
+             *
+             * Antes el timer solo arrancaba en Loaded y
+             * SOLO si ya existía una sesión. Si el Dashboard
+             * se abría antes de que NinjaTrader cargara las
+             * cuentas SimMaC (conexión lenta, Rithmic tardando,
+             * Dashboard abierto antes de conectar), Loaded
+             * veía _session == null y no arrancaba el timer.
+             *
+             * Luego el auto-refresh encontraba la cuenta y
+             * llamaba AttachSession, que pintaba UNA vez...
+             * y nunca más. Por eso un día funcionaba y otro no:
+             * dependía del orden en que cargaba todo.
+             */
+            EnsureRefreshTimerRunning();
+        }
+
+        private void EnsureRefreshTimerRunning()
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.BeginInvoke(
+                    new Action(
+                        EnsureRefreshTimerRunning));
+
+                return;
+            }
+
+            if (IsLoaded &&
+                !_refreshTimer.IsEnabled)
+            {
+                _refreshTimer.Start();
+            }
         }
 
         /// <summary>
@@ -271,12 +345,56 @@ namespace MaCProFunding.AddOn
 
                 _renderer.RenderLatestTrades(
                     todayClosedTrades);
+
+                if (_consecutiveRefreshErrors > 0)
+                {
+                    WriteOutput(
+                        "MaC Dashboard | Refresco recuperado | " +
+                        $"Cuenta: {_session.NinjaAccount.Name} | " +
+                        $"Errores previos: {_consecutiveRefreshErrors}");
+                }
+
+                _consecutiveRefreshErrors = 0;
+
+                _lastSuccessfulRefreshUtc =
+                    DateTime.UtcNow;
             }
             catch (Exception exception)
             {
-                System.Diagnostics.Debug.WriteLine(
-                    "[DashboardV2] Error al actualizar: " +
-                    exception);
+                _consecutiveRefreshErrors++;
+
+                DateTime nowUtc =
+                    DateTime.UtcNow;
+
+                if (nowUtc - _lastErrorLogUtc >=
+                    ErrorLogInterval)
+                {
+                    _lastErrorLogUtc = nowUtc;
+
+                    WriteOutput(
+                        "MaC Dashboard | ERROR al actualizar | " +
+                        $"Cuenta: {_session?.NinjaAccount.Name ?? "?"} | " +
+                        $"Errores seguidos: {_consecutiveRefreshErrors} | " +
+                        $"Último refresco OK (UTC): " +
+                        $"{(_lastSuccessfulRefreshUtc == DateTime.MinValue ? "nunca" : _lastSuccessfulRefreshUtc.ToString("HH:mm:ss"))} | " +
+                        exception);
+                }
+            }
+        }
+
+        private static void WriteOutput(
+            string message)
+        {
+            try
+            {
+                global::NinjaTrader.Code.Output.Process(
+                    message,
+                    global::NinjaTrader.NinjaScript
+                        .PrintTo.OutputTab1);
+            }
+            catch
+            {
+                // El diagnóstico nunca debe romper el Dashboard.
             }
         }
 
@@ -506,17 +624,19 @@ namespace MaCProFunding.AddOn
             RoutedEventArgs e)
         {
             UpdateActivationOverlay();
-            if (_session == null)
-            {
-                return;
-            }
 
-            RefreshDashboard();
-
+            /*
+             * FIX DASHBOARD — el timer arranca siempre.
+             * Si todavía no hay sesión, RefreshDashboard
+             * simplemente no hace nada en cada tick; en
+             * cuanto llegue la sesión, empieza a pintar.
+             */
             if (!_refreshTimer.IsEnabled)
             {
                 _refreshTimer.Start();
             }
+
+            RefreshDashboard();
         }
 
         private void OnDashboardUnloaded(
